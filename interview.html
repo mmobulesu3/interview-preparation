@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🌟 AI Tutor - Voice Practice 🌟</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 10px;
+    background: linear-gradient(to right, #fceabb, #787774);
+    color: #333;
+  }
+
+  h1 { 
+    text-align:center; 
+    margin-bottom:12px; 
+  }
+
+  /* Chat Box */
+  #chat-history {
+    background: white;
+    padding: 15px;
+    min-height: 220px;
+    max-height: 420px;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.08);
+    margin-bottom: 10px;
+  }
+  .chat-question, .chat-user { 
+    margin: 10px 0; 
+    padding: 12px 16px; 
+    border-radius: 10px; 
+    line-height:1.4; 
+  }
+  .chat-question { 
+    background: linear-gradient(135deg,#90caf9,#42a5f5); 
+    color:#fff; 
+    font-weight:600; 
+    border-left:6px solid #0d47a1; 
+  }
+  .chat-user { 
+    background: linear-gradient(135deg,#a5d6a7,#66bb6a); 
+    color:#fff; 
+    border-left:6px solid #1b5e20; 
+  }
+
+  /* Modern Buttons */
+  button {
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: all 0.25s ease, box-shadow 0.3s ease;
+    letter-spacing: 0.5px;
+  }
+  button:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    animation: glowPulse 1.5s infinite alternate;
+  }
+  button:active {
+    transform: scale(0.98);
+  }
+  @keyframes glowPulse {
+    from { box-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px currentColor; }
+    to { box-shadow: 0 0 15px rgba(255,255,255,0.5), 0 0 25px currentColor; }
+  }
+
+  /* Specific Button Colors */
+  #start-btn {
+    background: linear-gradient(135deg, #43a047, #66bb6a);
+  }
+  #pause-btn {
+    background: linear-gradient(135deg, #fbc02d, #fdd835);
+    color: #333;
+  }
+  #resume-btn {
+    background: linear-gradient(135deg, #2196f3, #42a5f5);
+  }
+  #exit-btn {
+    background: linear-gradient(135deg, #eb5233, #cb4040);
+  }
+  #record-btn {
+    background: linear-gradient(135deg, #9c27b0, #ba68c8);
+  }
+
+  /* Disabled look */
+  .muted {
+    opacity: 0.6;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  /* Controls Layout */
+  #controls { 
+    display:flex; 
+    gap:8px; 
+    flex-wrap:wrap; 
+    align-items:center; 
+    margin-bottom:12px; 
+  }
+
+  /* Dropdown Styling */
+  #controls label {
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+  }
+  #subject {
+    font-size: 14px;
+    padding: 8px 14px;
+    margin-left: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: linear-gradient(135deg, #ffffff, #f7f7f7);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  #subject:hover {
+    border-color: #66bb6a;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  #subject:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 6px rgba(66,165,245,0.8);
+  }
+
+  /* Video Styling */
+  #preview { 
+    width: 100%; 
+    max-width:420px; 
+    height: 240px; 
+    background:#000; 
+    border-radius:10px; 
+    display:block; 
+    margin: 10px auto; 
+    object-fit:cover; 
+  }
+  #recorded-video-container video { 
+    width:100%; 
+    max-width:600px; 
+    border-radius:10px; 
+  }
+
+  /* Results Container */
+  #results-container { 
+    margin-top:12px; 
+    background:#fff; 
+    padding:12px; 
+    border-radius:10px; 
+    box-shadow:0 0 6px rgba(0,0,0,0.06); 
+  }
+</style>
+
+</head>
+<body>
+  <h1>🌟 AI Tutor - Marketing Questions Practice 🌟</h1>
+
+  <div id="controls">
+    <label><b>Domain:</b>
+      <select id="subject">
+        <option value="java">Java Full-Stack</option>
+        <option value="dataEngineering">Data Engineering</option>
+        <option value="dataScience">Data Science</option>
+        <option value="sfdc">SFDC Developer</option>
+        <option value="DotNet">Dot Net</option>
+        <option value="Devops">DevOps</option>
+      </select>
+    </label>
+
+    <input id="userEmail" placeholder="Your email (to receive results)" style="padding:8px;border-radius:6px;border:1px solid #999" />
+
+    <button id="start-btn">▶ Start Practice</button>
+    <button id="pause-btn" disabled>⏸ Pause</button>
+    <button id="resume-btn" disabled style="display:none">▶ Resume</button>
+    <button id="exit-btn" disabled>❌ Exit</button>
+  </div>
+
+  <div id="chat-history">
+    <div style="text-align:center;color:#666">Select a domain, enter your email, and click <strong>Start Practice</strong>.</div>
+  </div>
+
+  <div style="text-align:center;">
+    <button id="record-btn" disabled>🎤 Speak Answer</button>
+    <video id="preview" autoplay muted></video>
+  </div>
+
+  <div id="recorded-video-container"></div>
+
+  <div id="results-container" style="display:none"></div>
+
+<script>
+    const questions = {
+      java: [
+        { question: "Q1.Intro: tell me about yourself?." },
+        { question: "Q2.Tell me about your project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q3.Tell me about your second project / client (SPECIFIC TO EACH CANDIDATE RESUME)? " },
+        { question: "Q4.What are your roles and responsibilities / daily routines in current project? " },
+        { question: "Q5.Scenario 2: what are the challenges you have faced and how you resolved them?" },
+        { question: "Q6.Explain the concept of Inversion of Control (IoC) and Dependency Injection (DI)?" },
+        { question: "Q7.what are the differences between REST and SOAP?" },
+        { question: "Q8.Describe your experience with front-end technologies in a Java full stack environment?" },
+        { question: "Q9.Can you explain the spring framework and its core modules?" },
+        { question: "Q10.Describe the differences between CSS Grid and Flexbox for layout design." },
+        { question: "Q11.Describe your experience with continuous integration and continuous delivery (CI/CD) pipelines?" },
+        { question: "Q12.What is method overloading and method overriding? Provide examples ?" },
+        { question: "Q13.Describe the newly added features in Java 8?" },
+        { question: "Q14.What is the default method, and why is it required?" },
+        { question: "Q15.What are the types and common ways to use lambda expressions?" },
+        { question: "Q16.In Java 8, what is Method Reference?" },
+        { question: "Q17.What is an Optional class?" },
+        { question: "Q18.What happens when the main() isn't declared as static?" },
+        { question: "Q19.Can we make the main() thread a daemon thread?" },
+        { question: "Q20.How is an infinite loop declared in Java?" },
+        { question: "Q21.Why Does Java Array Index Start with 0?" },
+      ],
+      dataEngineering: [
+        { question: "Q1.Intro: tell me about yourself?" },
+        { question: "Q2.Tell Me about your project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q3.Tell Me about your second project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q4.What are your roles and responsibilities / daily routines in current project? " },
+        { question: "Q5.Scenario 1: what are the challenges you have faced and how you resolved them?" },
+        { question: "Q6.Scenario 2: What are some of the important components of Hadoop?" },
+        { question: "Q7.Scenario 3:What are the differences between structured and unstructured data?" },
+        { question: "Q8.Scenario 4:What is ETL and why is it important in data engineering?" },
+        { question: "Q9.Scenario 5:.What are some of the methods of Reducer?" },
+        { question: "Q10.Scenario 6:In your opinion, what does a Data Engineer majorly do?" },
+        { question: "Q11.Scenario 7:Discuss the implications of the General Data Protection Regulation (GDPR) on data engineering pipelines and how to ensure compliance." },
+        { question: "Q12.Scenario8:  What do you mean by data pipeline?" },
+        { question: "Q13.Scenario9: What is orchestration?" },
+        { question: "Q14.Scenario10: What is your experience with using NoSQL databases?" },
+        { question: "Q15.Scenario11: There is a bug in one of the database systems you designed. How do you handle it?" },
+        { question: "Q17.Scenario13: . What happens when Block Scanner detects a corrupted data block?" },
+        { question: "Q18.Scenario14: How to rank the data in SQL?" },
+        { question: "Q19.Scenario14: How would you handle duplicate data points in an SQL query?" },
+        { question: "Q20.Scenario15: What is data modeling?" },
+        { question: "Q21.Scenario15: What is the purpose of A/B testing?" },
+        { question: "Q22.Scenario11: If hired, what would be your priorities as a senior data engineer?" },
+        { question: "Q23.Scenario11: There is a bug in one of the database systems you designed. How do you handle it?" },
+        { question: "Q24.Scenario12: How do you stay up-to-date on the latest trends in data engineering?" },
+      ],
+      dataScience: [
+        { question: "Q1.Tell me about yourself (depends on student’s resume)?" },
+        { question: "Q2.Tell me about recent Project A Gen-AI RAG Chatbot?" },
+        { question: "Q3.Roles and Responsibilities of AI/ML Developer (or) Data Scientist?" },
+        { question: "Q4.What are the meetings you have in your work and whom do you report to and what about your team size, members and their role" },
+        { question: "Q5.What's the Methodology which you are following in your project?" },
+        { question: "Q6.What are some critical production issues you have faced and how you resolved them?  " },
+        { question: "Q7.What automation have you done in projects?" },
+        { question: "Q8.What issues have you faced and how did you resolve them?" },
+        { question: "Q9.Machine Learning Project Workflow?" },
+        { question: "Q10.How will you optimize ML Models?" },
+        { question: "Q11.What are common challenges in deploying Machine Learning models?" },
+        { question: "Q12.Explain the difference between Supervised, Unsupervised, and Reinforcement Learning ?" },
+        { question: "Q13.Explain Overfitting and How to Prevent It. ?" },
+        { question: "Q14.Explain Performance Metrics in ML/DL/NLP for classification and regression ?" },
+        { question: "Q15.Give me examples of classification models and regression models in supervised ML and clustering models in unsupervised ML?" },
+      ],
+      Devops: [
+        { question: "Q1.Intro: tell me about yourself?" },
+        { question: "Q2.Tell Me about your project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q3.Tell Me about your second project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q4.What are your roles and responsibilities / daily routines in current project " },
+        { question: "Q5.Whats the Methodology which you are following in your project (Agile methodology)?" },
+        { question: "Q6.Scenario 1 : How did you migrate applications to cloud?" },
+        { question: "Q7.Scenario 2: what are the challenges you have faced and how you resolved them?" },
+        { question: "Q8.What are different stages of Jenkins pipeline?" },
+        { question: "Q9.Scenario 3: What all different plugins you installed and how jenkins pipeline is getting triggered automatically?" },
+        { question: "Q10.Scenario 4: How do you debug pods in Kubernetes?" },
+        { question: "Q11.Have you configured VPC?" },
+        { question: "Q12.How can we provision EC2 using terraform?" },
+        { question: "Q13.What are different components in Kubernetes ?" },
+        { question: "Q14.What is daemonset and when do we use it in Kubernetes?" },
+        { question: "Q15.What is terraform and what is state file?" },
+        { question: "Q16.What different monitoring tools have you used? " },
+        { question: "Q17.How does Azure Knows which agent to run for pipelines? " },
+        { question: "Q18.What are different kind of Agents we have in Azure Pipelines and which one you used ? " },
+        { question: "Q19.git fetch vs git pull?" },
+        { question: "Q20.How do we search and replace in bash scripting?" },
+        { question: "Q21.Scenario 5: How will you write dockerfile for Java/Python Application?" },
+        { question: "Q22.How did you lift and Shift application to Kubernetes services? " },
+        { question: "Q23.Scenario 8: How to expose Pods to outside?" },
+        { question: "Q24.Scenario 7: How to configure RBAC in Kubernetes?" },
+        { question: "Q25.Scenario 6: How can you read artifacts stored in S3 into EC2?" },
+      ],
+      sfdc: [
+        { question: "Q1.Tell me about yourself?" },
+        { question: "Q2.Tell me about your Project?" },
+        { question: "Q3.Tell me about your project? (Project 2)" },
+        { question: "Q4.Agile Methodology (or) Roles & responsibilities" },
+        { question: "Q5.Challenging in APEX code (Batch Class1)" },
+        { question: "Q6.Do you have any experience on Lightning?" },
+        { question: "Q7.Tell me any challenging scenario-02 on Lightning?" },
+        { question: "Q8.How do you write test classes in Apex?" },
+        { question: "Q9.Introduce yourself as a Salesforce Developer?" },
+        { question: "Q10.Difference between Trigger and Process Builder?" },
+      ],
+      DotNet: [
+        { question: "Q1.Intro: tell me about yourself?" },
+        { question: "Q2.Tell Me about your project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q3.Tell Me about your second project / client (SPECIFIC TO EACH CANDIDATE RESUME)?" },
+        { question: "Q4.What are your roles and responsibilities / daily routines in current project?" },
+        { question: "Q5.What’s the Methodology which you are following in your project (Agile methodology) and (scrum methodology)?" },
+        { question: "Q6.Scenario 1: what are the challenges you have faced and how you resolved them?" },
+        { question: "Q7.Scenario 2: How do you optimize ADO.NET performance in a high-traffic application?" },
+        { question: "Q8.Scenario 3: How do you define a class in C#?" },
+        { question: "Q9.Scenario 4: Discuss the advantages of using Entity Framework over traditional ADO.NET.?" },
+        { question: "Q10.Scenario 5: Can you explain the differences between ASP.NET Web Forms and ASP.NET MVC?" },
+        { question: "Q11.Scenario 6: Explain the difference between the Stack and the Heap ?" },
+        { question: "Q12.Scenario 7: Explain the differences between an Interface and an Abstract Class in .NET ?" },
+        { question: "Q13.Scenario 8: What is a delegate in .NET?" },
+        { question: "Q14.Scenario 9: What are the various methods provided to System.Object’s deriving classes/types?" },
+        { question: "Q15.Scenario 10: Explain what LINQ is ?" },
+        { question: "Q16.Scenario 11:Explain the difference between boxing and unboxing. Provide an example ?" },
+        { question: "Q17.Scenario 12:Explain what inheritance is, and why it’s important" },
+        { question: "Q18.Scenario 13:Explain the role of Common Language Runtime (CLR) in .NET development." },
+        { question: "Q19.Scenario 14:what is a css rule ?" },
+        { question: "Q20.Scenario 15:Discuss the advantages of using AJAX in ASP.NET applications?" },
+        { question: "Q21.Scenario 16:Can themes be applied to ASP.NET applications?" },
+        { question: "Q22.Scenario 17:What are the types of cookies available in ASP.NET?" },
+        { question: "Q23.Scenario 18:What are some of the security controls present in ASP.NET?" },
+        { question: "Q24.Scenario 19:What is the order of the events that take place in a page life cycle?" },
+        { question: "Q25.Scenario 20:What skills should a successful .NET Developer possess?" },
+      ],
+    };
+
+
+/* ===================== STATE ===================== */
+let selectedSubject = "java";
+let currentIndex = 0;
+let currentQuestion = null;
+let qaResults = [];                 // {question, answer, timestamp}
+let stream = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let recognition = null;
+let isRecording = false;
+let isPaused = false;
+
+/* ===================== DOM ===================== */
+const subjectSelect = document.getElementById('subject');
+const startBtn = document.getElementById('start-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const resumeBtn = document.getElementById('resume-btn');
+const exitBtn = document.getElementById('exit-btn');
+const recordBtn = document.getElementById('record-btn');
+const chatHistory = document.getElementById('chat-history');
+const preview = document.getElementById('preview');
+const recordedVideoContainer = document.getElementById('recorded-video-container');
+const resultsContainer = document.getElementById('results-container');
+const userEmailInput = document.getElementById('userEmail');
+
+/* ===================== Speech Recognition Setup ===================== */
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = (evt) => {
+    const transcript = evt.results[0][0].transcript.trim();
+    addUserAnswer(transcript);
+    toggleRecordBtn(false);
+    // short pause before next question
+    setTimeout(() => {
+      if (!isPaused) askQuestion();
+    }, 700);
+  };
+
+  recognition.onerror = (evt) => {
+    console.warn('Speech recognition error:', evt.error);
+    toggleRecordBtn(false);
+    // continue gracefully
+    setTimeout(() => { if (!isPaused) askQuestion(); }, 700);
+  };
+
+  recognition.onend = () => {
+    // will be called when user stops speaking; nothing special needed
+    toggleRecordBtn(false);
+  };
+} else {
+  alert('Speech Recognition API not supported in this browser. Use Chrome for best results.');
+  recordBtn.disabled = true;
+}
+
+/* ===================== BUTTON EVENTS ===================== */
+startBtn.addEventListener('click', startPractice);
+pauseBtn.addEventListener('click', pausePractice);
+resumeBtn.addEventListener('click', resumePractice);
+exitBtn.addEventListener('click', exitPractice);
+recordBtn.addEventListener('click', onRecordBtnClick);
+subjectSelect.addEventListener('change', () => { selectedSubject = subjectSelect.value; });
+
+/* ===================== FLOW FUNCTIONS ===================== */
+async function startPractice() {
+  const userEmail = (userEmailInput.value || '').trim();
+  if (!userEmail || !validateEmail(userEmail)) {
+    alert('Please enter a valid email to receive results.');
+    return;
+  }
+
+  selectedSubject = subjectSelect.value;
+  currentIndex = 0;
+  qaResults = [];
+  recordedChunks = [];
+  isPaused = false;
+
+  chatHistory.innerHTML = '';
+  recordedVideoContainer.innerHTML = '';
+  resultsContainer.style.display = 'none';
+  resultsContainer.innerHTML = '';
+
+  startBtn.disabled = true;
+  subjectSelect.disabled = true;
+  pauseBtn.disabled = false;
+  exitBtn.disabled = false;
+  recordBtn.disabled = false;
+
+  await startStream();
+  startRecording();          // start whole-session recording (pausable)
+  askQuestion();
+}
+
+function askQuestion() {
+  if (isPaused) return;
+  const list = questions[selectedSubject] || [];
+  if (currentIndex >= list.length) {
+    finishPractice();
+    return;
+  }
+  currentQuestion = list[currentIndex];
+  currentIndex++;
+
+  appendToChat(`<div class="chat-question"><strong>AI Question:</strong> ${currentQuestion.question}</div>`);
+  scrollChatBottom();
+}
+
+function addUserAnswer(transcript) {
+  const entry = { question: currentQuestion?.question || 'Unknown', answer: transcript, time: new Date().toISOString() };
+  qaResults.push(entry);
+  appendToChat(`<div class="chat-user"><strong>Your Answer:</strong> ${escapeHtml(transcript)}</div>`);
+  scrollChatBottom();
+}
+
+/* ===================== RECORDING (MediaRecorder) ===================== */
+async function startStream() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    preview.srcObject = stream;
+  } catch (err) {
+    alert('Webcam/mic access error: ' + err.message);
+    throw err;
+  }
+}
+
+function startRecording() {
+  if (!stream) return;
+  recordedChunks = [];
+  mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp8,opus' });
+
+  mediaRecorder.ondataavailable = (e) => {
+    if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+  };
+
+  mediaRecorder.onstop = onRecordingStop;
+  mediaRecorder.start(1000); // collect in 1s chunks
+  isRecording = true;
+  console.log('MediaRecorder started');
+}
+
+function onRecordingStop() {
+  isRecording = false;
+  const blob = new Blob(recordedChunks, { type: 'video/webm' });
+  const url = URL.createObjectURL(blob);
+  recordedVideoContainer.innerHTML = `
+    <h4>Your Practice Video</h4>
+    <video controls src="${url}"></video>
+    <div style="margin-top:6px;">
+      <a href="${url}" download="session_recording.webm">📥 Download Video</a>
+    </div>
+  `;
+  // show basic results summary
+  renderResults();
+  // automatically send to backend
+  sendResultsToServer(blob);
+}
+
+function pauseRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.pause();
+    console.log('MediaRecorder paused');
+  }
+}
+function resumeRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'paused') {
+    mediaRecorder.resume();
+    console.log('MediaRecorder resumed');
+  }
+}
+function stopRecording() {
+  if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
+    mediaRecorder.stop();
+  }
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    preview.srcObject = null;
+  }
+}
+
+/* ===================== PAUSE / RESUME / EXIT ===================== */
+function pausePractice() {
+  isPaused = true;
+  pauseBtn.disabled = true;
+  resumeBtn.style.display = 'inline-block';
+  resumeBtn.disabled = false;
+  recordBtn.disabled = true;
+  // pause recorder
+  pauseRecording();
+  // stop any ongoing speech recognition
+  try { recognition && recognition.stop(); } catch(e) {}
+  appendToChat(`<div style="text-align:center;color:#444"><em>⏸ Interview paused</em></div>`);
+}
+
+function resumePractice() {
+  isPaused = false;
+  pauseBtn.disabled = false;
+  resumeBtn.style.display = 'none';
+  recordBtn.disabled = false;
+  // resume recorder
+  resumeRecording();
+  appendToChat(`<div style="text-align:center;color:#444"><em>▶ Interview resumed</em></div>`);
+  // ask next question if any
+  askQuestion();
+}
+
+function exitPractice() {
+  // stop everything, show partial results
+  appendToChat(`<div style="text-align:center;color:#900"><strong> Interview exited by user.</strong></div>`);
+  finishPractice();
+}
+
+/* ===================== FINISH & RESULTS ===================== */
+function finishPractice() {
+  pauseBtn.disabled = true;
+  resumeBtn.disabled = true;
+  exitBtn.disabled = true;
+  recordBtn.disabled = true;
+  startBtn.disabled = false;
+  subjectSelect.disabled = false;
+
+  // stop recog & recording
+  try { recognition && recognition.stop(); } catch(e){}
+  stopRecording();
+}
+
+/* ===================== RECORD BUTTON (starts/stops speech recog for current QA) ===================== */
+function onRecordBtnClick() {
+  if (!recognition) return;
+  // if recording speech currently, stop recognition (recognition.onend will handle)
+  if (recordBtn.classList.contains('listening')) {
+    try { recognition.stop(); } catch (e) { console.warn(e); }
+    toggleRecordBtn(false);
+    return;
+  }
+  // start recognition for the current question
+  toggleRecordBtn(true);
+  try { recognition.start(); } catch (err) { console.warn('recognition start error', err); toggleRecordBtn(false); }
+}
+
+function toggleRecordBtn(on) {
+  if (on) {
+    recordBtn.classList.add('listening');
+    recordBtn.textContent = '⏹ Stop';
+    recordBtn.style.background = '#d32f2f';
+  } else {
+    recordBtn.classList.remove('listening');
+    recordBtn.textContent = '🎤 Speak Answer';
+    recordBtn.style.background = '';
+  }
+}
+
+/* ===================== UI HELPERS ===================== */
+function appendToChat(html) {
+  chatHistory.insertAdjacentHTML('beforeend', html);
+}
+function scrollChatBottom() {
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function validateEmail(e) {
+  return /\S+@\S+\.\S+/.test(e);
+}
+
+/* ===================== SHOW RESULTS ===================== */
+function renderResults() {
+  const answered = qaResults.length;
+  let html = `<h3>Interview Results</h3>`;
+  html += `<p><strong>Domain:</strong> ${selectedSubject} &nbsp; • &nbsp; <strong>Answered:</strong> ${answered}</p>`;
+  html += `<ol>`;
+  qaResults.forEach(q => {
+    html += `<li><b>${escapeHtml(q.question)}</b><div><i>Answer:</i> ${escapeHtml(q.answer)}</div><small>${new Date(q.time).toLocaleString()}</small></li>`;
+  });
+  html += `</ol>`;
+  resultsContainer.innerHTML = html;
+  resultsContainer.style.display = 'block';
+}
+
+/* ===================== SEND TO BACKEND (email) ===================== */
+async function sendResultsToServer(videoBlob) {
+  const userEmail = (userEmailInput.value || '').trim();
+  const form = new FormData();
+  form.append('userEmail', userEmail);
+  form.append('results', JSON.stringify(qaResults));
+  form.append('domain', selectedSubject);
+  if (videoBlob) form.append('video', videoBlob, 'session_recording.webm');
+
+  try {
+    const resp = await fetch('http://localhost:3000/send-email', {
+      method: 'POST',
+      body: form
+    });
+    const json = await resp.json();
+    if (json.success) {
+      appendToChat(`<div style="text-align:center;color:green"><strong>Email sent to admin & user.</strong></div>`);
+    } else {
+      appendToChat(`<div style="text-align:center;color:orange"><strong>Email request completed (server replied with error).</strong></div>`);
+      console.error(json);
+    }
+  } catch (err) {
+    appendToChat(`<div style="text-align:center;color:red"><strong>Error sending results to server: ${escapeHtml(err.message)}</strong></div>`);
+    console.error(err);
+  }
+}
+
+/* ===================== UTILITIES ===================== */
+/* Ensure graceful page unload: stop media */
+window.addEventListener('beforeunload', () => {
+  try { recognition && recognition.stop(); } catch(e){}
+  if (stream) stream.getTracks().forEach(t => t.stop());
+});
+</script>
+</body>
+</html>
+
+
