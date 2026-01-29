@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>🌟 AI Tutor - Voice Practice 🌟</title>
+  <title>🌟 Neoteksoft AT Tutor  🌟</title>
 
 <style>
   body {
@@ -181,14 +181,14 @@
 
     <input id="userEmail" placeholder="Your email (to receive results)" style="padding:8px;border-radius:6px;border:1px solid #999" />
 
-    <button id="start-btn">▶ Start Practice</button>
+    <button id="start-btn">▶ Start </button>
     <button id="pause-btn" disabled>⏸ Pause</button>
     <button id="resume-btn" disabled style="display:none">▶ Resume</button>
     <button id="exit-btn" disabled>❌ Exit</button>
   </div>
 
   <div id="chat-history">
-    <div style="text-align:center;color:#666">Select a domain, enter your email, and click <strong>Start Practice</strong>.</div>
+    <div style="text-align:center;color:#666">Select a domain, enter your email, and click <strong>Start </strong>.</div>
   </div>
 
   <div style="text-align:center;">
@@ -640,7 +640,7 @@ async function sendResultsToServer(videoBlob) {
       console.error(json);
     }
   } catch (err) {
-    appendToChat(`<div style="text-align:center;color:red"><strong>Error sending results to server: ${escapeHtml(err.message)}</strong></div>`);
+    appendToChat(`<div style="text-align:center;color:red"><strong>Do good practice: ${escapeHtml(err.message)}</strong></div>`);
     console.error(err);
   }
 }
@@ -654,5 +654,6 @@ window.addEventListener('beforeunload', () => {
 </script>
 </body>
 </html>
+
 
 
