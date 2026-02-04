@@ -1,1 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Tutor - Start Learning</title>
 
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ===== GLOBAL ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+    color: #333;
+}
+.hidden { display: none; }
+
+/* ===== HEADER ===== */
+.app-header {
+    background: #0d47a1;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container h1 {
+    margin: 0;
+    font-size: 22px;
+}
+.tagline {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* ===== NAVBAR ===== */
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 14px;
+}
+.main-nav a:hover,
+.main-nav a.active {
+    font-weight: 600;
+    text-decoration: underline;
+}
+.logout-btn {
+    background: #e53935;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.learning-container {
+    display: flex;
+    padding: 15px;
+    gap: 15px;
+}
+
+/* ===== LEFT PANEL ===== */
+.selection-panel {
+    width: 28%;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.selection-panel h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.topic-description {
+    background: #eef5ff;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+/* ===== BUTTON ===== */
+.primary-btn {
+    width: 100%;
+    background: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.primary-btn:hover {
+    background: #43a047;
+}
+
+/* ===== RIGHT PANEL ===== */
+.content-area {
+    width: 72%;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.welcome-screen {
+    text-align: center;
+    padding: 40px;
+}
+.welcome-screen h2 {
+    color: #0d47a1;
+}
+
+/* ===== VIDEO ===== */
+.video-learning-layout {
+    display: flex;
+    gap: 15px;
+}
+.video-wrapper {
+    flex: 2;
+}
+video, iframe {
+    width: 100%;
+    height: 480px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* ===== FOOTER ===== */
+.app-footer {
+    text-align: center;
+    padding: 10px;
+    background: #0d47a1;
+    color: white;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .learning-container {
+        flex-direction: column;
+    }
+    .selection-panel,
+    .content-area {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="logo-container">
+            <h1>AI Tutor</h1>
+            <p class="tagline">Your personal learning assistant</p>
+
+    </header>
+
+    <div class="learning-container">
+        <div class="selection-panel">
+            <div class="subject-selection">
+                <h3>Select Subject</h3>
+                <select id="subject-dropdown" class="form-select">
+                    <option value="">-- Select Subject --</option>
+                    <option value="java">Java Full-Stack Developer</option>
+                    <option value="dataEngineering">Data Engineering</option>
+                    <option value="dataScience">Data Science</option>
+                    <option value="DotNet">Dot Net Developer</option>
+                    <option value="sfdc">SFDC Developer</option>
+                    <option value="Devops">Devops Engineer</option>
+                </select>
+            </div>
+            
+            <div class="topic-selection">
+                <h3>Select Topic</h3>
+                <select id="topic-dropdown" class="form-select">
+                    <option value="">-- Select Topic --</option>
+                </select>
+            </div>
+            
+            <div class="topic-description" id="topic-description">
+                <h4>Topic Description</h4>
+                <p id="description-text">Select a subject and topic to see details here.</p>
+            </div>
+            
+            <button id="load-topic-btn" class="primary-btn">Start Learning</button>
+        </div>
+        
+        <div class="content-area">
+            <div class="welcome-screen" id="welcome-screen">
+                <h2>Welcome to AI Tutor Learning</h2>
+                <p>Select a subject and topic from the left panel, then click "Start Learning" to begin your journey.</p>
+            </div>
+            
+            <div class="video-player-container hidden" id="video-player-container">
+                <h2 id="video-title">Topic Title</h2>
+                <div class="video-learning-layout">
+                    <div class="video-wrapper" id="video-wrapper">
+                        <!-- Video or iframe will be injected here -->
+                    </div>
+                    
+                </div>
+                <button id="start-test-btn" class="primary-btn hidden">Test on this topic</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <p>AI Tutor &copy;@obulesu2025 | Powered by AI</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const subjectDropdown = document.getElementById("subject-dropdown");
+            const topicDropdown = document.getElementById("topic-dropdown");
+            const loadTopicBtn = document.getElementById("load-topic-btn");
+
+            const welcomeScreen = document.getElementById("welcome-screen");
+            const videoPlayerContainer = document.getElementById("video-player-container");
+            const videoWrapper = document.getElementById("video-wrapper");
+            const videoTitle = document.getElementById("video-title");
+            const descriptionText = document.getElementById("description-text");
+
+            // Subject → Topics mapping
+            const subjectTopics = {
+                java: [
+                    { value: "java_basics", text: "day-01", description: "Introduction to Java programming language.", video: "iframe:https://drive.google.com/file/d/1U-ZENYME9N9h1M5i9U51SVWIVC_wAvvh/preview" },
+                    { value: "spring_boot", text: "day-02", description: "Learn how to create REST APIs using Spring Boot.", video: "iframe:https://drive.google.com/file/d/1VbarZolqmaWpku1FZTmEHbPxIdmhBeux/preview" },
+                    { value: "rest_api", text: "day-03", description: "Build and consume RESTful APIs in Java.", video: "iframe:https://drive.google.com/file/d/1okz1eYZY6B-Wdj34KRKCdMl1PLlreCgU/preview" },
+                    { value: "java", text: "day-04", description: "Introduction to Java programming language.", video: "iframe:https://drive.google.com/file/d/1py2u1HzfOenParkgRAAbOae43Ej7y0I-/preview" },
+                    { value: "Queen", text: "day-05", description: "Learn how to create REST APIs using Spring Boot.", video: "iframe:https://drive.google.com/file/d/15Xzcq_KQHexWNRa5ILp7TkEWnpjCskp5/preview" },
+                    { value: "king", text: "day-06", description: " APIs in Java.", video: "iframe:https://drive.google.com/file/d/1U-_GcP587wIk5aqN6nu-eO9b9Op2m4vk/preview" },
+                    { value: "Mock", text: "day-07", description: "Java programming language.", video: "iframe:https://drive.google.com/file/d/1nLTTbQo_FqIAMHp7l7qJu64ZDeY-gv1k/preview" },
+                    { value: "boot", text: "day-08", description: " APIs using Spring Boot.", video: "iframe:https://drive.google.com/file/d/10d7BYtXQxDyAVfiHhagOHJi4cRzG6dvm/preview" },
+                    { value: "api", text: "day-09", description: "Build Java.", video: "iframe:https://drive.google.com/file/d/1DU8ZiUqXYQJIlire-11aaLwG4gbHtrFB/preview" },
+                    { value: "asics", text: "day-10", description: "anguage.", video: "iframe:https://drive.google.com/file/d/14GOvM-D26rl5mPCN2EO_FkaKf8SOeqer/preview" },
+                    { value: "oot", text: "day-11", description: "Boot.", video: "iframe:https://drive.google.com/file/d/10EwUObjGkfdKrxcGzKxVVirXNTsebPyz/preview" },
+                    { value: "ret_i", text: "day-12", description: "B consume RESTful a.", video: "iframe:https://drive.google.com/file/d/1hGetTDnq5OIenlv9w2ATwVsMp2WUQLr0/preview" },
+                    { value: "jasics", text: "day-13", description: " language.", video: "iframe:https://drive.google.com/file/d/1ULLqSE91Wbxrrcd0uEZGcapg7ZW6neNe/preview" },
+                    { value: "spi", text: "day-14", description: "REST APIs .", video: "https://drive.google.com/file/d/1501dVHDwLFwaNAoJMTVx1KabRE0Kae64/preview" },
+                    { value: "pin", text: "day-15", description: "Build and consume RESTful APIs in Java.", video: "iframe:https://drive.google.com/file/d/1qMlGxA6wLN82Y7AvCAVEEpdzEn4txDrA/preview" },
+                    { value: "sics", text: "day-16", description: "Introduction to Java programming language.", video: "iframe:https://drive.google.com/file/d/1Tu_OTlMK7GTCzH8UY_6kzl2bS9MNgVYF/preview" },
+                    { value: "pring", text: "day-17", description: "Learn how to create REST APIs using Spring Boot.", video: "iframe:https://drive.google.com/file/d/1eN2B5NNpycnXvIEyMZyQq3rkJNcM8YNz/preview" },
+                    { value: "o_api", text: "day-18", description: "Build and consume RESTful APIs in Java.", video: "iframe:https://drive.google.com/file/d/1B0rOMiuvKtU3bDiSUnV21MUntnkvEu1Y/preview" },
+                    { value: "ics", text: "day-19", description: "Introduction to Java programming language.", video: "iframe:https://drive.google.com/file/d/1MsIfp57RPuviFcOdCVJ5-vyQIbFZU4Ss/preview" },
+                    { value: "spri", text: "day-20", description: "Learn how to create REST APIs using Spring Boot.", video: "iframe:https://drive.google.com/file/d/10ZMNBbXqV6D7l9ZEchE7a_OwMZelsaIW/preview" },
+                    { value: "r_i", text: "day-21", description: "Build and consume RESTful APIs in Java.", video: "iframe:https://drive.google.com/file/d/11gXwPFHUThv7VbxtSGdeAnZbAVhRoYsG/preview" },
+                    { value: "java_drama", text: "day-22", description: "Introduction to Java programming language.", video: "iframe:https://drive.google.com/file/d/1Scoj__QvSEUxTt4m4UkenlaorMS_oxyY/preview" },
+                    { value: "st", text: "day-23", description: "java Spring Boot data.", video: "iframe:https://drive.google.com/file/d/1PgjseKhHZ-IkbAI2BYMQcKNVPcZXXyyw/preview" },
+                    { value: "javconversion", text: "day-24", description: "two are three days end ", video: "iframe:https://drive.google.com/file/d/1E9t_zaefrCxAoWOm1LDhc77SFA8TJSNr/preview" },
+                    { value: "jav", text: "day-25", description: " javalanguage of ending Session.", video: "iframe:https://drive.google.com/file/d/1e05SYVxXCoI_I_YCPLlKmHeYjwZr6gH_/preview" },
+                    
+
+                ],
+                dataEngineering: [
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "etl", text: "ETL Concepts", description: "Learn Extract, Transform, and Load processes.", video: "/static/videos/etl.mp4" },
+                    { value: "spark", text: "Apache Spark", description: "Big data processing with Apache Spark.", video: "/static/videos/spark.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                    { value: "data_warehousing", text: "Data Warehousing", description: "Store and manage large datasets efficiently.", video: "/static/videos/data_warehousing.mp4" },
+                ],
+                dataScience: [
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "data_viz", text: "Data Visualization", description: "Create visualizations with Matplotlib and Seaborn.", video: "/static/videos/data_viz.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+                    { value: "python_ds", text: "Python for Data Science", description: "Learn Python libraries like Pandas, NumPy, and Matplotlib.", video: "/static/videos/python_ds.mp4" },
+                    { value: "ml_basics", text: "Machine Learning Basics", description: "Understand supervised and unsupervised learning.", video: "/static/videos/ml_basics.mp4" },
+
+                ],
+                sfdc: [
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },  
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                    { value: "salesforce_basics", text: "Salesforce Basics", description: "Introduction to Salesforce CRM.", video: "/static/videos/salesforce_basics.mp4" },
+                    { value: "apex", text: "Apex Programming", description: "Write Apex code in Salesforce.", video: "/static/videos/apex.mp4" },
+                    { value: "lightning", text: "Lightning Components", description: "Create Salesforce Lightning UI components.", video: "/static/videos/lightning.mp4" },
+                ],
+                Devops: [
+                    { value: "ci_cd", text: "day_1", description: "Aws_01.", video: "iframe:https://drive.google.com/file/d/1ShW5GZgqz_jB5gm1StoWD3wudxvJsZrf/preview" },
+                    { value: "docker", text: "day_2", description: "Aws_02.", video: "iframe:https://drive.google.com/file/d/1_ghxzI1WiHa59q50kcaEm5kyA8N05tkF/preview" },
+                    { value: "kubernetes", text: "day_3", description: "Aws_03.", video: "iframe:https://drive.google.com/file/d/14IWPA3GgEziPMmLT9Vz4q2Uhv_JQwvRX/preview" },
+                    { value: "ci", text: "day_4", description: "Aws_4.", video: "iframe:https://drive.google.com/file/d/16lodn7FxHQn3j1RkiDLi9QGRNSSJhHGu/preview" },
+                    { value: "ker", text: "day_5", description: "Aws_05.", video: "iframe:https://drive.google.com/file/d/1ILpizFF0FEza2_qmRYIQZN5afiGmbNdX/preview" },
+                    { value: "netes", text: "day_6", description: "Devops_Introduction.", video: "iframe:https://drive.google.com/file/d/1iWgePv0fovMO3JO0UTMbmALVLSYFFpfJ/preview" },
+                    { value: "cd", text: "day_7", description: "Docker_01.", video: "iframe:https://drive.google.com/file/d/1lPu2P9jnByX3xgpEjI23gWEpUBxK11Nt/preview" },
+                    { value: "doc", text: "day_8", description: "Docker_02.", video: "iframe:https://drive.google.com/file/d/1yiyHSPUL1UHOKC5ly2SUvEVB2tGSWJDw/preview" },
+                    { value: "ernetes", text: "day_9", description: "Docker_03.", video: "iframe:https://drive.google.com/file/d/1VRFgJkDk2IwVpupIWYwYnzkxC-ATzlII/preview" },
+                    { value: "demo", text: "day_10", description: "Docker_Commands.", video: "iframe:https://drive.google.com/file/d/1VRFgJkDk2IwVpupIWYwYnzkxC-ATzlII/preview" },
+                    { value: "dark", text: "day_11", description: "Docker_Commands_01.", video: "iframe:https://drive.google.com/file/d/18B0CKTI6aYv0VkSVVx5etuiNUszfUmVA/preview" },
+                    { value: "tes", text: "day_12", description: "Docker_Commands_02.", video: "iframe:https://drive.google.com/file/d/1CoRFjkJs5o4EGumavFLMRlNpv0H-yzI1/preview" },
+                    { value: "ci_C", text: "day_13", description: "Extensive_Git.", video: "iframe:https://drive.google.com/file/d/1Ymu15EJRllSqLk1IOamgpk6LNK6jqTaO/preview" },
+                    { value: "mijey", text: "day_14", description: "Git_01.", video: "iframe:https://drive.google.com/file/d/1cJp218MH0Jxrpg-8JNCgWfee4YWZWZ-r/preview" },
+                    { value: "es", text: "day_15", description: "git_02.", video: "iframe:https://drive.google.com/file/d/11EJa0LvFn-PfYqLNwO6afX8hxVQviOhq/preview" },
+                    { value: "cexes", text: "day_16", description: "Kubernetes_0414.", video: "iframe:https://drive.google.com/file/d/14Ka0EehTDNH9JxzxDm9hSJJ_TKdtWtU-/preview" },
+                    { value: "mike", text: "day_17", description: "Kubernetes_0415.", video: "iframe:https://drive.google.com/file/d/1f8t3UdPkJeyHnijP3H5qPFTRYIDw8-LV/preview" },
+                    { value: "notes", text: "day_18", description: "Kubernetes_0416.", video: "iframe:https://drive.google.com/file/d/1NjZ4EfIVYcrmmMzzUL0eCT8Ex2y0Z-Eo/preview" },
+                    { value: "ciocd", text: "day_19", description: "Kubernetes_0417.", video: "iframe:https://drive.google.com/file/d/1D5uyYyvdUyC-6Gy3vrWsLfVjKJca_w5k/preview" },
+                    { value: "kerent", text: "day_20", description: "Kubernetes_0418.", video: "iframe:https://drive.google.com/file/d/1BgSD0SfEY6-RBkT9B1diIH878b1WaG-B/preview" },
+                    { value: "kubus", text: "day_21", description: "Kubernetes_0419.", video: "iframe:https://drive.google.com/file/d/1tzsxdh40uhBEq461N4Qhx6uwv8zsIs-t/preview" },
+                    { value: "giri", text: "day_22", description: "linux_file_operation.", video: "iframe:https://drive.google.com/file/d/15VuosMmSdsoVoxut-vJfB6ToiX_jvhWJ/preview" },
+                    { value: "nagendra", text: "day_23", description: "linux_overview.", video: "iframe:https://drive.google.com/file/d/1wb-FaqoYS-qDh3Lz66ACNu9fKoiHGpIs/preview" },
+                    { value: "komes", text: "day_24", description: "linux_understanding.", video: "iframe:https://drive.google.com/file/d/1ya9ErJAq_JqQympVZ22xE-WRW5ta-lY_/preview" },
+                    { value: "kutes", text: "day_25", description: "Morelinux.", video: "iframe:https://drive.google.com/file/d/1DhiUqp-6iYtkmpQov5UZ6yc93wsu38Us/preview" },
+
+                ]
+            };
+
+            // Populate topics when subject changes
+            subjectDropdown.addEventListener("change", function () {
+                topicDropdown.innerHTML = '<option value="">-- Select Topic --</option>';
+                const subject = subjectDropdown.value;
+                if (subjectTopics[subject]) {
+                    subjectTopics[subject].forEach(topic => {
+                        const option = document.createElement("option");
+                        option.value = topic.value;
+                        option.textContent = topic.text;
+                        topicDropdown.appendChild(option);
+                    });
+                }
+                descriptionText.textContent = "Select a topic to see details here.";
+            });
+
+            // Show description when topic changes
+            topicDropdown.addEventListener("change", function () {
+                const subject = subjectDropdown.value;
+                const topicValue = topicDropdown.value;
+                const topic = subjectTopics[subject]?.find(t => t.value === topicValue);
+                if (topic) {
+                    descriptionText.textContent = topic.description;
+                }
+            });
+
+            // Load video when "Start Learning" is clicked
+            loadTopicBtn.addEventListener("click", function () {
+                const subject = subjectDropdown.value;
+                const topicValue = topicDropdown.value;
+                const topic = subjectTopics[subject]?.find(t => t.value === topicValue);
+                if (topic) {
+                    videoTitle.textContent = topic.text;
+                    videoWrapper.innerHTML = ""; // clear previous video
+
+                    if (topic.video.startsWith("iframe:")) {
+                        const iframe = document.createElement("iframe");
+                        iframe.src = topic.video.replace("iframe:", "");
+                        iframe.width = "100%";
+                        iframe.height = "480";
+                        iframe.allow = "autoplay";
+                        iframe.frameBorder = "0";
+                        videoWrapper.appendChild(iframe);
+                    } else {
+                        const video = document.createElement("video");
+                        video.src = topic.video;
+                        video.controls = true;
+                        video.autoplay = true;
+                        video.width = "100%";
+                        video.style.height = 'auto';
+                        videoWrapper.appendChild(video);
+                    }
+
+                    welcomeScreen.classList.add("hidden");
+                    videoPlayerContainer.classList.remove("hidden");
+                } else {
+                    alert("Please select both subject and topic.");
+                }
+            });
+        });
+    
+const sendBtn = document.getElementById("video-send-btn");
+const input = document.getElementById("video-question-input");
+const chatBox = document.getElementById("video-chat-messages");
+const testBtn = document.getElementById("start-test-btn");
+
+// Enter key support
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendBtn.click();
+});
+
+sendBtn.addEventListener("click", async () => {
+    const question = input.value.trim();
+    if (!question) return;
+
+    // Show user message
+    chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
+    input.value = "";
+
+    // Loading message
+    chatBox.innerHTML += `<p id="loading"><b>ChatGPT:</b> Typing...</p>`;
+
+    try {
+        const res = await fetch("http://localhost:5000/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ question })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("loading").remove();
+
+        // Show AI reply
+        chatBox.innerHTML += `<p><b>ChatGPT:</b> ${data.answer}</p>`;
+
+        // Show Test Button after AI reply
+        testBtn.classList.remove("hidden");
+
+    } catch (err) {
+        document.getElementById("loading").remove();
+        chatBox.innerHTML += `<p style="color:red;">ChatGPT Error: Backend not running</p>`;
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+    </script>
+</body>
+</html>
